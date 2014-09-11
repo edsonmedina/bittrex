@@ -9,16 +9,16 @@ namespace edsonmedina\bittrex;
 
 class Client
 {
-	private $version = 'v1.1';
 	private $baseUrl;
+	private $apiVersion = 'v1.1';
 	private $apiKey;
 	private $apiSecret;
 
 	public function __construct ($apiKey, $apiSecret)
 	{
-		$this->apiKey = $apiKey;
+		$this->apiKey    = $apiKey;
 		$this->apiSecret = $apiSecret;
-		$this->baseUrl = 'https://bittrex.com/api/'.$this->version.'/';
+		$this->baseUrl   = 'https://bittrex.com/api/'.$this->apiVersion.'/';
 	}
 
 	/**

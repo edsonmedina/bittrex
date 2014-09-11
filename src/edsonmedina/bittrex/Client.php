@@ -1,8 +1,13 @@
 <?php
 
+/**
+ * Bittrex API wrapper class
+ * @author Edson Medina <edsonmedina@gmail.com>
+ */
+
 namespace edsonmedina\bittrex;
 
-class Client 
+class Client
 {
 	private $version = 'v1.1';
 	private $baseUrl;
@@ -21,7 +26,7 @@ class Client
 		$uri = $this->baseUrl.'public/'.$query;
 
 		$ch = curl_init ($uri);
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);	
+		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
 		$result = curl_exec($ch);
 
 		return json_decode($result);
@@ -30,12 +35,12 @@ class Client
 	private function callMarket ($query)
 	{
 		$uri = $this->baseUrl.'market/'.$query.'&nounce='.time();
-		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);	
+		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
 
 		$ch = curl_init ($uri);
-		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign:'.$sign));	
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);	
-		$result = curl_exec($ch);	
+		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign:'.$sign));
+		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+		$result = curl_exec($ch);
 
 		return json_decode($result);
 	}
@@ -45,8 +50,8 @@ class Client
 		$uri = $this->baseUrl.'account/'.$query.'&apikey='.$this->apiKey;
 
 		$ch = curl_init ($uri);
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);	
-		$result = curl_exec($ch);	
+		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+		$result = curl_exec($ch);
 
 		return json_decode($result);
 	}

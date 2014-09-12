@@ -8,4 +8,6 @@
 	$secret = '6171690af7364ea2a951dc85d00e1130';
 
 	$b = new Client ($key, $secret);
-	print_r ($b->getCurrencies ());
+	var_dump ($b->getOpenOrders ());
+	
+	echo "\n\n";

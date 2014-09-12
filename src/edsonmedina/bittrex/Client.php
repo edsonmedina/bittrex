@@ -30,7 +30,10 @@ class Client
 	{
 		$uri = $this->baseUrl.'public/'.$query;
 
+		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
+		
 		$ch = curl_init ($uri);
+		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign:'.$sign));
 		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
 		$result = curl_exec($ch);
 
@@ -44,7 +47,10 @@ class Client
 	 */
 	private function callMarket ($query)
 	{
-		$uri = $this->baseUrl.'market/'.$query.'&nounce='.time();
+		$uri  = $this->baseUrl.'market/'.$query;
+		$uri .= strpos ($uri, '?') === FALSE ? '?' : '&';
+		$uri .= 'nounce='.time().'&apikey='.$this->apiKey;
+
 		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
 
 		$ch = curl_init ($uri);
@@ -64,8 +70,11 @@ class Client
 	{
 		$uri = $this->baseUrl.'account/'.$query.'&apikey='.$this->apiKey;
 
+		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
+
 		$ch = curl_init ($uri);
 		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign:'.$sign));
 		$result = curl_exec($ch);
 
 		return json_decode($result);
@@ -139,6 +148,77 @@ class Client
 	public function getMarketHistory ($market, $count = 20)
 	{
 		return $this->callPublic ('getmarkethistory?market='.$market.'&count='.$count);
+	}
+
+	/**
+	 * Place a limit buy order in a specific market. 
+	 * Make sure you have the proper permissions set on your API keys for this call to work
+	 * @param string $market  literal for the market (ex: BTC-LTC)
+	 * @param float $quantity the amount to purchase
+	 * @param float $rate     the rate at which to place the order
+	 * @return array
+	 */
+	public function buyLimit ($market, $quantity, $rate)
+	{
+		return $this->callMarket ('buylimit?market='.$market.'&quantity='.$quantity.'&rate='.$rate);
+	}
+
+	/**
+	 * Place a buy order in a specific market. 
+	 * Make sure you have the proper permissions set on your API keys for this call to work
+	 * @param string $market  literal for the market (ex: BTC-LTC)
+	 * @param float $quantity the amount to purchase
+	 * @return array
+	 */
+	public function buyMarket ($market, $quantity)
+	{
+		return $this->callMarket ('buymarket?market='.$market.'&quantity='.$quantity);
+	}
+
+	/**
+	 * Place a limit sell order in a specific market. 
+	 * Make sure you have the proper permissions set on your API keys for this call to work
+	 * @param string $market  literal for the market (ex: BTC-LTC)
+	 * @param float $quantity the amount to sell
+	 * @param float $rate     the rate at which to place the order
+	 * @return array
+	 */
+	public function sellLimit ($market, $quantity, $rate)
+	{
+		return $this->callMarket ('selllimit?market='.$market.'&quantity='.$quantity.'&rate='.$rate);
+	}
+
+	/**
+	 * Place a sell order in a specific market. 
+	 * Make sure you have the proper permissions set on your API keys for this call to work
+	 * @param string $market  literal for the market (ex: BTC-LTC)
+	 * @param float $quantity the amount to sell
+	 * @return array
+	 */
+	public function sellMarkey ($market, $quantity)
+	{
+		return $this->callMarket ('cancel?uuid='.$uuid);
+	}
+
+	/**
+	 * Cancel a buy or sell order 
+	 * @param string $uuid id of sell or buy order
+	 * @return array
+	 */
+	public function cancel ($uuid)
+	{
+		return $this->callMarket ('cancel?uuid='.$uuid);
+	}
+
+	/**
+	 * Get all orders that you currently have opened. A specific market can be requested
+	 * @param string $market  literal for the market (ex: BTC-LTC)
+	 * @return array
+	 */
+	public function getOpenOrders ($market = null)
+	{
+		$params = empty ($market) ? '' : '?market='.$market;
+		return $this->callMarket ('getopenorders'.$params);
 	}
 }
 

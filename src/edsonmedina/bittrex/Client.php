@@ -49,12 +49,12 @@ class Client
 	{
 		$uri  = $this->baseUrl.'market/'.$query;
 		$uri .= strpos ($uri, '?') === FALSE ? '?' : '&';
-		$uri .= 'nounce='.time().'&apikey='.$this->apiKey;
+		$uri .= 'apikey='.$this->apiKey.'&nonce='.time();
 
 		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
 
 		$ch = curl_init ($uri);
-		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign:'.$sign));
+		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign: '.$sign));
 		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
 		$result = curl_exec($ch);
 
@@ -74,7 +74,7 @@ class Client
 
 		$ch = curl_init ($uri);
 		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign:'.$sign));
+		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign: '.$sign));
 		$result = curl_exec($ch);
 
 		return json_decode($result);

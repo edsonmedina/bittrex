@@ -8,6 +8,6 @@
 	$secret = '6171690af7364ea2a951dc85d00e1130';
 
 	$b = new Client ($key, $secret);
-	var_dump ($b->getOpenOrders ());
+	var_dump ($b->getOrderHistory ());
 	
 	echo "\n\n";

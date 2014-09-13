@@ -68,13 +68,15 @@ class Client
 	 */
 	private function callAccount ($query)
 	{
-		$uri = $this->baseUrl.'account/'.$query.'&apikey='.$this->apiKey;
+		$uri = $this->baseUrl.'account/'.$query;
+		$uri .= strpos ($uri, '?') === FALSE ? '?' : '&';
+		$uri .= 'apikey='.$this->apiKey.'&nonce='.time();
 
 		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
 
 		$ch = curl_init ($uri);
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign: '.$sign));
+		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
 		$result = curl_exec($ch);
 
 		return json_decode($result);
@@ -219,6 +221,89 @@ class Client
 	{
 		$params = empty ($market) ? '' : '?market='.$market;
 		return $this->callMarket ('getopenorders'.$params);
+	}
+
+	/**
+	 * Retrieve all balances from your account
+	 * @return array
+	 */
+	public function getBalances ()
+	{
+		return $this->callAccount ('getbalances');
+	}
+
+	/**
+	 * Retrieve the balance from your account for a specific currency
+	 * @param string $currency literal for the currency (ex: LTC)
+	 * @return array
+	 */
+	public function getBalance ($currency)
+	{
+		return $this->callAccount ('getbalance?currency='.$currency);
+	}
+
+	/**
+	 * Retrieve or generate an address for a specific currency. If one 
+	 * does not exist, the call will fail and return ADDRESS_GENERATING 
+	 * until one is available.
+	 * @param string $currency literal for the currency (ex: LTC)
+	 * @return array
+	 */
+	public function getDepositAddress ($currency)
+	{
+		return $this->callAccount ('getdepositaddress?currency='.$currency);
+	}
+
+	/**
+	 * Withdraw funds from your account. note: please account for txfee.
+	 * @param string $currency  literal for the currency (ex: LTC)
+	 * @param float $quantity   the quantity of coins to withdraw
+	 * @param float $address    the address where to send the funds
+	 * @param float $paymentid  (optional) used for CryptoNotes/BitShareX/Nxt optional field (memo/paymentid)
+	 * @return array
+	 */
+	public function withdraw ($currency, $quantity, $address, $paymentid = null)
+	{
+		$params = 'currency='.$currency.'&quantity='.$quantity.'&address='.$address;
+		
+		if ($paymentid) {
+			$params .= '&paymentid='.$paymentid;
+		}
+		
+		return $this->callAccount ('withdraw?'.$params);
+	}
+
+	/**
+	 * Retrieve a single order by uuid
+	 * @param string $uuid 	the uuid of the buy or sell order
+	 * @return array
+	 */
+	public function getOrder ($uuid)
+	{
+		return $this->callAccount ('getorder?uuid='.$uuid);
+	}
+
+	/**
+	 * Retrieve your order history
+	 * @param string $market  (optional) a string literal for the market (ie. BTC-LTC). If ommited, will return for all markets
+	 * @param integer $count  (optional) the number of records to return
+	 * @return array
+	 */
+	public function getOrderHistory ($market = null, $count = null)
+	{
+		$params = '';
+		$separator = '?';
+
+		if ($market) {
+			$params .= $separator.'market='.$market;
+			$separator = '&';
+		}
+
+		if ($count) {
+			$params .= $separator.'count='.$count;
+		}
+
+		return $this->callAccount ('getorderhistory'.$params);
 	}
 }
 

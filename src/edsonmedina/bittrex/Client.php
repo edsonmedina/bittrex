@@ -22,34 +22,24 @@ class Client
 	}
 
 	/**
-	 * Invoke method in the /public/ namespace
-	 * @param string $query ie: method?param=val
-	 * @return array
+	 * Invoke API
+	 * @param string $method API method to call
+	 * @param array $params parameters
+	 * @param bool $apiKey  use apikey or not
+	 * @return object
 	 */
-	private function callPublic ($query)
+	private function call ($method, $params = array(), $apiKey = false)
 	{
-		$uri = $this->baseUrl.'public/'.$query;
+		$uri  = $this->baseUrl.$method;
 
-		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
-		
-		$ch = curl_init ($uri);
-		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign:'.$sign));
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-		$result = curl_exec($ch);
+		if ($apiKey == true) {
+			$params['apikey'] = $this->apiKey;
+			$params['nonce']  = time();
+		}
 
-		return json_decode($result);
-	}
-
-	/**
-	 * Invoke method in the /market/ namespace
-	 * @param string $query ie: method?param=val
-	 * @return array
-	 */
-	private function callMarket ($query)
-	{
-		$uri  = $this->baseUrl.'market/'.$query;
-		$uri .= strpos ($uri, '?') === FALSE ? '?' : '&';
-		$uri .= 'apikey='.$this->apiKey.'&nonce='.time();
+		if (!empty($params)) {
+			$uri .= '?'.http_build_query($params);
+		}
 
 		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
 
@@ -58,28 +48,13 @@ class Client
 		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
 		$result = curl_exec($ch);
 
-		return json_decode($result);
-	}
+		$answer = json_decode($result);
 
-	/**
-	 * Invoke method in the /account/ namespace
-	 * @param string $query ie: method?param=val
-	 * @return array
-	 */
-	private function callAccount ($query)
-	{
-		$uri = $this->baseUrl.'account/'.$query;
-		$uri .= strpos ($uri, '?') === FALSE ? '?' : '&';
-		$uri .= 'apikey='.$this->apiKey.'&nonce='.time();
+		if ($answer->success == false) {
+			throw new \Exception ($answer->message);
+		}
 
-		$sign = hash_hmac ('sha512', $uri, $this->apiSecret);
-
-		$ch = curl_init ($uri);
-		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign: '.$sign));
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
-		$result = curl_exec($ch);
-
-		return json_decode($result);
+		return $answer;
 	}
 
 	/**
@@ -88,7 +63,7 @@ class Client
 	 */
 	public function getMarkets ()
 	{
-		return $this->callPublic ('getmarkets');
+		return $this->call ('public/getmarkets');
 	}
 
 	/**
@@ -97,7 +72,7 @@ class Client
 	 */
 	public function getCurrencies ()
 	{
-		return $this->callPublic ('getcurrencies');
+		return $this->call ('public/getcurrencies');
 	}
 
 	/**
@@ -107,7 +82,7 @@ class Client
 	 */
 	public function getTicker ($market)
 	{
-		return $this->callPublic ('getticker?market='.$market);
+		return $this->call ('public/getticker', array('market' => $market));
 	}
 
 	/**
@@ -116,29 +91,34 @@ class Client
 	 */
 	public function getMarketSummaries ()
 	{
-		return $this->callPublic ('getmarketsummaries');
+		return $this->call ('public/getmarketsummaries');
 	}
 
 	/**
 	 * Get the last 24 hour summary of all active exchanges
-	 * @param string $market	literal for the market (ex: BTC-LTC)
+	 * @param string $market literal for the market (ex: BTC-LTC)
 	 * @return array
 	 */
 	public function getMarketSummary ($market)
 	{
-		return $this->callPublic ('getmarketsummary?market='.$market);
+		return $this->call ('public/getmarketsummary', array('market' => $market));
 	}
 
 	/**
 	 * Get the orderbook for a given market
 	 * @param string $market  literal for the market (ex: BTC-LTC)
-	 * @param string $type	"buy", "sell" or "both" to identify the type of orderbook to return
+	 * @param string $type	  "buy", "sell" or "both" to identify the type of orderbook to return
 	 * @param integer $depth  how deep of an order book to retrieve. Max is 50.
 	 * @return array
 	 */
 	public function getOrderBook ($market, $type, $depth = 20)
 	{
-		return $this->callPublic ('getorderbook?market='.$market.'&type='.$type.'&depth='.$depth);
+		$params = array (
+			'market' => $market,
+			'type'   => $type,
+			'depth'  => $depth
+		);
+		return $this->call ('public/getorderbook', $params);
 	}
 
 	/**
@@ -149,7 +129,11 @@ class Client
 	 */
 	public function getMarketHistory ($market, $count = 20)
 	{
-		return $this->callPublic ('getmarkethistory?market='.$market.'&count='.$count);
+		$params = array (
+			'market' => $market,
+			'count'  => $count
+		);
+		return $this->call ('public/getmarkethistory', $params);
 	}
 
 	/**
@@ -162,7 +146,12 @@ class Client
 	 */
 	public function buyLimit ($market, $quantity, $rate)
 	{
-		return $this->callMarket ('buylimit?market='.$market.'&quantity='.$quantity.'&rate='.$rate);
+		$params = array (
+			'market'   => $market,
+			'quantity' => $quantity,
+			'rate'     => $rate
+		);
+		return $this->call ('market/buylimit', $params, true);
 	}
 
 	/**
@@ -174,7 +163,11 @@ class Client
 	 */
 	public function buyMarket ($market, $quantity)
 	{
-		return $this->callMarket ('buymarket?market='.$market.'&quantity='.$quantity);
+		$params = array (
+			'market'   => $market,
+			'quantity' => $quantity
+		);
+		return $this->call ('market/buymarket', $params, true);
 	}
 
 	/**
@@ -187,7 +180,12 @@ class Client
 	 */
 	public function sellLimit ($market, $quantity, $rate)
 	{
-		return $this->callMarket ('selllimit?market='.$market.'&quantity='.$quantity.'&rate='.$rate);
+		$params = array (
+			'market'   => $market,
+			'quantity' => $quantity,
+			'rate'     => $rate
+		);
+		return $this->call ('market/selllimit', $params, true);
 	}
 
 	/**
@@ -199,7 +197,11 @@ class Client
 	 */
 	public function sellMarkey ($market, $quantity)
 	{
-		return $this->callMarket ('cancel?uuid='.$uuid);
+		$params = array (
+			'market'   => $market,
+			'quantity' => $quantity
+		);
+		return $this->call ('market/sellmarket', $params, true);
 	}
 
 	/**
@@ -209,7 +211,8 @@ class Client
 	 */
 	public function cancel ($uuid)
 	{
-		return $this->callMarket ('cancel?uuid='.$uuid);
+		$params = array ('uuid' => $uuid);
+		return $this->call ('market/cancel', $params, true);
 	}
 
 	/**
@@ -219,8 +222,8 @@ class Client
 	 */
 	public function getOpenOrders ($market = null)
 	{
-		$params = empty ($market) ? '' : '?market='.$market;
-		return $this->callMarket ('getopenorders'.$params);
+		$params = array ('market' => $market);
+		return $this->call ('market/getopenorders', $params, true);
 	}
 
 	/**
@@ -229,7 +232,7 @@ class Client
 	 */
 	public function getBalances ()
 	{
-		return $this->callAccount ('getbalances');
+		return $this->call ('account/getbalances', array(), true);
 	}
 
 	/**
@@ -239,7 +242,8 @@ class Client
 	 */
 	public function getBalance ($currency)
 	{
-		return $this->callAccount ('getbalance?currency='.$currency);
+		$params = array ('currency' => $currency);
+		return $this->call ('account/getbalance', $params, true);
 	}
 
 	/**
@@ -251,7 +255,8 @@ class Client
 	 */
 	public function getDepositAddress ($currency)
 	{
-		return $this->callAccount ('getdepositaddress?currency='.$currency);
+		$params = array ('currency' => $currency);
+		return $this->call ('account/getdepositaddress', $params, true);
 	}
 
 	/**
@@ -264,13 +269,17 @@ class Client
 	 */
 	public function withdraw ($currency, $quantity, $address, $paymentid = null)
 	{
-		$params = 'currency='.$currency.'&quantity='.$quantity.'&address='.$address;
+		$params = array (
+			'currency' => $currency,
+			'quantity' => $quantity,
+			'address'  => $address,
+		);
 		
 		if ($paymentid) {
-			$params .= '&paymentid='.$paymentid;
+			$params['paymentid'] = $paymentid;
 		}
 		
-		return $this->callAccount ('withdraw?'.$params);
+		return $this->call ('account/withdraw', $params, true);
 	}
 
 	/**
@@ -280,7 +289,8 @@ class Client
 	 */
 	public function getOrder ($uuid)
 	{
-		return $this->callAccount ('getorder?uuid='.$uuid);
+		$params = array ('uuid' => $uuid);
+		return $this->call ('account/getorder', $params, true);
 	}
 
 	/**
@@ -291,19 +301,17 @@ class Client
 	 */
 	public function getOrderHistory ($market = null, $count = null)
 	{
-		$params = '';
-		$separator = '?';
+		$params = array ();
 
 		if ($market) {
-			$params .= $separator.'market='.$market;
-			$separator = '&';
+			$params['market'] = $market;
 		}
 
 		if ($count) {
-			$params .= $separator.'count='.$count;
+			$params['count'] = $count;
 		}
 
-		return $this->callAccount ('getorderhistory'.$params);
+		return $this->call ('account/getorderhistory', $params, true);
 	}
 
 	/**
@@ -314,19 +322,17 @@ class Client
 	 */
 	public function getWithdrawalHistory ($currency = null, $count = null)
 	{
-		$params = '';
-		$separator = '?';
+		$params = array ();
 
 		if ($currency) {
-			$params .= $separator.'currency='.$currency;
-			$separator = '&';
+			$params['currency'] = $currency;
 		}
 
 		if ($count) {
-			$params .= $separator.'count='.$count;
+			$params['count'] = $count;
 		}
 
-		return $this->callAccount ('getwithdrawalhistory'.$params);
+		return $this->call ('account/getwithdrawalhistory', $params, true);
 	}
 
 	/**
@@ -337,19 +343,17 @@ class Client
 	 */
 	public function getDepositHistory ($currency = null, $count = null)
 	{
-		$params = '';
-		$separator = '?';
+		$params = array ();
 
 		if ($currency) {
-			$params .= $separator.'currency='.$currency;
-			$separator = '&';
+			$params['currency'] = $currency;
 		}
 
 		if ($count) {
-			$params .= $separator.'count='.$count;
+			$params['count'] = $count;
 		}
 
-		return $this->callAccount ('getdeposithistory'.$params);
+		return $this->call ('account/getdeposithistory', $params, true);
 	}
 }
 

@@ -305,6 +305,52 @@ class Client
 
 		return $this->callAccount ('getorderhistory'.$params);
 	}
+
+	/**
+	 * Retrieve your withdrawal history
+	 * @param string $currency  (optional) a string literal for the currecy (ie. BTC). If omitted, will return for all currencies
+	 * @param integer $count    (optional) the number of records to return
+	 * @return array
+	 */
+	public function getWithdrawalHistory ($currency = null, $count = null)
+	{
+		$params = '';
+		$separator = '?';
+
+		if ($currency) {
+			$params .= $separator.'currency='.$currency;
+			$separator = '&';
+		}
+
+		if ($count) {
+			$params .= $separator.'count='.$count;
+		}
+
+		return $this->callAccount ('getwithdrawalhistory'.$params);
+	}
+
+	/**
+	 * Retrieve your deposit history
+	 * @param string $currency  (optional) a string literal for the currecy (ie. BTC). If omitted, will return for all currencies
+	 * @param integer $count    (optional) the number of records to return
+	 * @return array
+	 */
+	public function getDepositHistory ($currency = null, $count = null)
+	{
+		$params = '';
+		$separator = '?';
+
+		if ($currency) {
+			$params .= $separator.'currency='.$currency;
+			$separator = '&';
+		}
+
+		if ($count) {
+			$params .= $separator.'count='.$count;
+		}
+
+		return $this->callAccount ('getdeposithistory'.$params);
+	}
 }
 
 // vim: noexpandtab

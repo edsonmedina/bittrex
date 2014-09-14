@@ -54,7 +54,7 @@ class Client
 			throw new \Exception ($answer->message);
 		}
 
-		return $answer;
+		return $answer->result;
 	}
 
 	/**

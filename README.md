@@ -1,9 +1,14 @@
 bittrex
 =======
 
-PHP wrapper class for Bittrex API
+PHP wrapper class for Bittrex API (https://bittrex.com/home/api)
 
-Work in progress...
+// TODO documentation
 
 
-If this is useful, please donate to 1EqkjTeHpmojaKbgxBYv1wwTFGDzdwb5xn
+
+
+
+
+Tips are welcome.
+BTC address - 1EqkjTeHpmojaKbgxBYv1wwTFGDzdwb5xn

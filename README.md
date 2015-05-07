@@ -10,8 +10,6 @@ Requirements
 
 Usage
 ======
-	require __DIR__.'/src/edsonmedina/bittrex/Client.php';
-
 	use edsonmedina\bittrex\Client;
 
 	$key = '4bec433f95e54562aeeefae92ebedb84'; // use your key and secret

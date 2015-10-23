@@ -26,6 +26,3 @@ TODO
 
 
 
-Tips are welcome.
-
-BTC address - 1EqkjTeHpmojaKbgxBYv1wwTFGDzdwb5xn

@@ -195,7 +195,7 @@ class Client
 	 * @param float $quantity the amount to sell
 	 * @return array
 	 */
-	public function sellMarkey ($market, $quantity)
+	public function sellMarket ($market, $quantity)
 	{
 		$params = array (
 			'market'   => $market,

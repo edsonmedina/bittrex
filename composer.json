@@ -1,0 +1,22 @@
+{
+    "name": "edsonmedina/bittrex",
+    "description": "Client library to Bittrex API",
+    "require": {
+        "php": ">=7.0",
+        "guzzlehttp/guzzle": "^6.3"
+    },
+    "require-dev": {
+        "eher/phpunit": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "edsonmedina\\bittrex\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Edson Medina",
+            "email": "edsonmedina@gmail.com"
+        }
+    ]
+}

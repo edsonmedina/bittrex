@@ -1,18 +1,18 @@
 <?php
 namespace edsonmedina\bittrex;
 
-use edsonmedina\bittrex\valueobjects\Address;
-use edsonmedina\bittrex\valueobjects\Balance;
-use edsonmedina\bittrex\valueobjects\Market;
-use edsonmedina\bittrex\valueobjects\Money;
-use edsonmedina\bittrex\valueobjects\Order;
-use edsonmedina\bittrex\valueobjects\Payment;
-use edsonmedina\bittrex\valueobjects\Withdrawal;
-
-require __DIR__.'/../vendor/autoload.php';
+use edsonmedina\bittrex\account\Address;
+use edsonmedina\bittrex\account\Balance;
+use edsonmedina\bittrex\account\Market;
+use edsonmedina\bittrex\account\Money;
+use edsonmedina\bittrex\account\Order;
+use edsonmedina\bittrex\account\Payment;
+use edsonmedina\bittrex\account\Withdrawal;
 
 class Account
 {
+    const baseUrl = 'https://bittrex.com/api/v1.1/';
+
     /** @var string */
     private $apiKey;
 
@@ -22,9 +22,7 @@ class Account
     /** @var string */
     private $secret;
 
-    const baseUrl = 'https://bittrex.com/api/v1.1/';
-
-    static public function connect (string $apiKey, string $secret): Account
+    static public function connect(string $apiKey, string $secret): self
     {
         $guzzle = new \GuzzleHttp\Client([
             'base_uri' => self::baseUrl,

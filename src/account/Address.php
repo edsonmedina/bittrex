@@ -1,6 +1,6 @@
 <?php
 
-namespace edsonmedina\bittrex\valueobjects;
+namespace edsonmedina\bittrex\account;
 
 class Address
 {

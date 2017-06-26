@@ -1,7 +1,7 @@
-PHP wrapper class for Bittrex API 
+Bittrex API client library for PHP
 =======
 
-This class is a wrapper for the Bittrex altcoin trader platform API (https://bittrex.com/home/api). You can use it to check market values, do tradings with your wallet, deposit and withdraw coins, write your own trading bot, etc
+This is an API client library for the Bittrex altcoin trader platform API (https://bittrex.com/home/api). You can use it to check market values, do tradings with your wallet, deposit and withdraw coins, write your own trading bot, etc
 
 Requirements
 ======
@@ -10,19 +10,7 @@ Requirements
 
 Usage
 ======
-	use edsonmedina\bittrex\Client;
-
-	$key = '4bec433f95e54562aeeefae92ebedb84'; // use your key and secret
-	$secret = '6171690af7364ea2a951dc85d00e1130';
-
-	$b = new Client ($key, $secret);
-	
-	$list = $b->getOrderHistory ();
-
-Documentation
-======
-TODO
-
+	// TODO
 
 
 

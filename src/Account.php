@@ -6,6 +6,8 @@ use edsonmedina\bittrex\valueobjects\Balance;
 use edsonmedina\bittrex\valueobjects\Market;
 use edsonmedina\bittrex\valueobjects\Money;
 use edsonmedina\bittrex\valueobjects\Order;
+use edsonmedina\bittrex\valueobjects\Payment;
+use edsonmedina\bittrex\valueobjects\Withdrawal;
 
 require __DIR__.'/../vendor/autoload.php';
 
@@ -189,6 +191,79 @@ class Account
                     (string) $order->Condition,
                     (float)  $order->ConditionTarget,
                     (bool)   $order->ImmediateOrCancel
+                );
+            },
+            $response
+        );
+    }
+
+    public function getOrder(string $uuid): Order
+    {
+        $response = $this->call('account/getorder', [
+            'uuid' => $uuid
+        ]);
+
+        // TODO: Add missing properties to Order class
+    }
+
+    /**
+     * @param null|string $currency
+     * @return Withdrawal[]
+     */
+    public function getWithdrawalHistory(?string $currency = null): array
+    {
+        $extraParams = [];
+
+        if ($currency) {
+            $extraParams['currency'] = $currency;
+        }
+
+        $response = $this->call('account/getwithdrawalhistory', $extraParams);
+
+        return array_map (
+            function ($transfer) {
+                return new Withdrawal(
+                    (string) $transfer->PaymentUuid,
+                    (string) $transfer->Currency,
+                    (float)  $transfer->Amount,
+                    (string) $transfer->Address,
+                    (bool)   $transfer->Opened,
+                    (bool)   $transfer->Authorized,
+                    (bool)   $transfer->PendingPayment,
+                    (float)  $transfer->TxCost,
+                    (string) $transfer->TxId,
+                    (bool)   $transfer->Canceled,
+                    (bool)   $transfer->InvalidAddress
+                );
+            },
+            $response
+        );
+    }
+
+    /**
+     * @param null|string $currency
+     * @return Payment[]
+     */
+    public function getDepositHistory(?string $currency = null): array
+    {
+        $extraParams = [];
+
+        if ($currency) {
+            $extraParams['currency'] = $currency;
+        }
+
+        $response = $this->call('account/getdeposithistory', $extraParams);
+
+        return array_map (
+            function ($payment) {
+                return new Payment(
+                    (int)    $payment->Id,
+                    (float)  $payment->Amount,
+                    (string) $payment->Currency,
+                    (int)    $payment->Confirmations,
+                    (string) $payment->LastUpdated,
+                    (string) $payment->TxId,
+                    (string) $payment->CryptoAddress
                 );
             },
             $response

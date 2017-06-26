@@ -10,12 +10,14 @@ $secret = '39b5b5f00a5b47b5a62439bd7b0216b6';
 
 $bittrex = Account::connect($apiKey, $secret);
 
-//$balances = $bittrex->getBalances();
-//$balances = $bittrex->getBalance('XPY');
-//$balances = $bittrex->getDepositAddress('RDD');
-//$balances = $bittrex->getOrderHistory(new Market('BTC', 'DOPE'));
-$balances = $bittrex->getOrderHistory(new Market('BTC', 'DOPE'));
+//$response = $bittrex->getBalances();
+//$response = $bittrex->getBalance('XPY');
+//$response = $bittrex->getDepositAddress('RDD');
+//$response = $bittrex->getOrderHistory(new Market('BTC', 'DOPE'));
+//$response = $bittrex->getOrderHistory(new Market('BTC', 'DOPE'));
+//$response = $bittrex->getWithdrawalHistory();
+$response = $bittrex->getDepositHistory();
 
-print_r ($balances);
+print_r ($response);
 
 echo "\n";

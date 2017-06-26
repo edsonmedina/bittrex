@@ -97,6 +97,7 @@ class Order
      */
     public function getTimestamp(): string
     {
+        // TODO return \DateTime
         return $this->timestamp;
     }
 

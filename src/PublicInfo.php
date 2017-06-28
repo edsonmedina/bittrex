@@ -2,6 +2,7 @@
 
 namespace edsonmedina\bittrex;
 
+use edsonmedina\bittrex\publicinfo\CurrencyInfo;
 use edsonmedina\bittrex\publicinfo\Market;
 
 class PublicInfo
@@ -78,6 +79,29 @@ class PublicInfo
                     $market->MarketName,
                     $market->IsActive,
                     $market->Created
+                );
+            },
+            $response
+        );
+    }
+
+    /**
+     * @return CurrencyInfo[]
+     */
+    public function getCurrencies(): array
+    {
+        $response = $this->call('public/getcurrencies');
+
+        return array_map(
+            function ($currencyInfo) {
+                return new CurrencyInfo(
+                    $currencyInfo->Currency,
+                    $currencyInfo->CurrencyLong,
+                    $currencyInfo->MinConfirmation,
+                    $currencyInfo->TxFee,
+                    $currencyInfo->IsActive,
+                    $currencyInfo->CoinType,
+                    $currencyInfo->BaseAddress
                 );
             },
             $response

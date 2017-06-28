@@ -18,7 +18,8 @@ $secret = '39b5b5f00a5b47b5a62439bd7b0216b6';
 //$response = $bittrex->getDepositHistory();
 
 $bittrex = PublicInfo::connect();
-$response = $bittrex->getMarkets();
+//$response = $bittrex->getMarkets();
+$response = $bittrex->getCurrencies();
 
 print_r ($response);
 

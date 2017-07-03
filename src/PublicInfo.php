@@ -4,6 +4,7 @@ namespace edsonmedina\bittrex;
 
 use edsonmedina\bittrex\publicinfo\CurrencyInfo;
 use edsonmedina\bittrex\publicinfo\Market;
+use edsonmedina\bittrex\publicinfo\Ticker;
 
 class PublicInfo
 {
@@ -38,7 +39,7 @@ class PublicInfo
         $uri = self::baseUrl . $method;
 
         if (!empty($extraParams)) {
-            $uri .= '&'.http_build_query($extraParams);
+            $uri .= '?'.http_build_query($extraParams);
         }
 
         $options = [
@@ -105,6 +106,26 @@ class PublicInfo
                 );
             },
             $response
+        );
+    }
+
+    public function getTicker($market)
+    {
+        if (empty($market)) {
+            throw new \InvalidArgumentException("Market can't be empty");
+        }
+
+        $response = $this->call('public/getticker', [
+            'market' => $market
+        ]);
+
+        list ($fromCurrency, $toCurrency) = explode('-', $market);
+
+        return new Ticker(
+            $fromCurrency,
+            $response->Bid,
+            $response->Ask,
+            $response->Last
         );
     }
 }

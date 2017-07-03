@@ -1,6 +1,6 @@
 <?php
 
-namespace edsonmedina\bittrex\account;
+namespace edsonmedina\bittrex\common;
 
 class Money
 {

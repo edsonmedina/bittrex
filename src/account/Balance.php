@@ -2,6 +2,8 @@
 
 namespace edsonmedina\bittrex\account;
 
+use edsonmedina\bittrex\common\Money;
+
 class Balance
 {
     /** @var string */

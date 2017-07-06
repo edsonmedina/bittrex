@@ -72,14 +72,14 @@ class PublicInfo
         return array_map(
             function ($market) {
                 return new Market(
-                    $market->MarketCurrency,
-                    $market->BaseCurrency,
-                    $market->MarketCurrencyLong,
-                    $market->BaseCurrencyLong,
-                    $market->MinTradeSize,
-                    $market->MarketName,
-                    $market->IsActive,
-                    $market->Created
+                    (string) $market->MarketCurrency,
+                    (string) $market->BaseCurrency,
+                    (string) $market->MarketCurrencyLong,
+                    (string) $market->BaseCurrencyLong,
+                    (float)  $market->MinTradeSize,
+                    (string) $market->MarketName,
+                    (bool)   $market->IsActive,
+                    (string) $market->Created
                 );
             },
             $response
@@ -96,13 +96,13 @@ class PublicInfo
         return array_map(
             function ($currencyInfo) {
                 return new CurrencyInfo(
-                    $currencyInfo->Currency,
-                    $currencyInfo->CurrencyLong,
-                    $currencyInfo->MinConfirmation,
-                    $currencyInfo->TxFee,
-                    $currencyInfo->IsActive,
-                    $currencyInfo->CoinType,
-                    $currencyInfo->BaseAddress
+                    (string) $currencyInfo->Currency,
+                    (string) $currencyInfo->CurrencyLong,
+                    (int)    $currencyInfo->MinConfirmation,
+                    (float)  $currencyInfo->TxFee,
+                    (bool)   $currencyInfo->IsActive,
+                    (string) $currencyInfo->CoinType,
+                    (string) $currencyInfo->BaseAddress
                 );
             },
             $response
@@ -122,10 +122,15 @@ class PublicInfo
         list ($fromCurrency, $toCurrency) = explode('-', $market);
 
         return new Ticker(
-            $fromCurrency,
-            $response->Bid,
-            $response->Ask,
-            $response->Last
+            (string) $fromCurrency,
+            (float)  $response->Bid,
+            (float)  $response->Ask,
+            (float)  $response->Last
         );
+    }
+
+    public function ()
+    {
+        
     }
 }

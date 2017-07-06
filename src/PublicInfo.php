@@ -128,9 +128,4 @@ class PublicInfo
             (float)  $response->Last
         );
     }
-
-    public function ()
-    {
-        
-    }
 }

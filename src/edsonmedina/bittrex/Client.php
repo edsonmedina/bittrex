@@ -47,6 +47,10 @@ class Client
 		curl_setopt ($ch, CURLOPT_HTTPHEADER, array('apisign: '.$sign));
 		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, true);
 		$result = curl_exec($ch);
+		
+		if (curl_errno($ch)) { 
+			throw new Exception(curl_error($ch));
+		}
 
 		$answer = json_decode($result);
 

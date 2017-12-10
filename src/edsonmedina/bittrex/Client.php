@@ -49,7 +49,7 @@ class Client
 		$result = curl_exec($ch);
 		
 		if (curl_errno($ch)) { 
-			print curl_error($ch); die();
+			throw new Exception(curl_error($ch));
 		}
 
 		$answer = json_decode($result);

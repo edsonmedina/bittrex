@@ -31,7 +31,7 @@ class Ticker
      */
     public function getBid(): Money
     {
-        return new Money($this->fromCurrency, $this->bid);
+        return new Money($this->bid, $this->fromCurrency);
     }
 
     /**
@@ -39,7 +39,7 @@ class Ticker
      */
     public function getAsk(): Money
     {
-        return new Money($this->fromCurrency, $this->ask);
+        return new Money($this->ask, $this->fromCurrency);
     }
 
     /**
@@ -47,6 +47,6 @@ class Ticker
      */
     public function getLast(): Money
     {
-        return new Money($this->fromCurrency, $this->last);
+        return new Money($this->last, $this->fromCurrency);
     }
 }
